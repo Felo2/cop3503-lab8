@@ -2,7 +2,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <conio.h>
 typedef unsigned int uint;
 using namespace std;
 
@@ -55,8 +54,21 @@ void DisplayHero(Hero &hero)
 // LoadHero function
 void LoadHeroFile(vector<Hero> &heroes, int fileNum)
 {
-	// Open the file
-	ifstream file("SAMPLE_heroes.dat", ios_base::binary);
+	string filePath;
+	// Open the file based on fileNum passed
+	switch (fileNum)
+	{
+	case 1:
+		filePath = "fantasyheroes.dat";
+		break;
+	case 2:
+		filePath = "superheroes.dat";
+		break;
+	default:
+		break;
+	}
+
+	ifstream file(filePath, ios_base::binary);
 
 	if (file.is_open())
 	{
@@ -148,7 +160,111 @@ void PrintAllHeroes(vector<Hero> &heroes)
 }
 
 
+// Print hero with most items
+void PrintMostItemHero(vector<Hero> &heroes)
+{
+	Hero loaded = heroes.at(0);
+	for (uint i = 0; i < heroes.size(); i++)
+	{
+		if (heroes.at(i).inventory.size() > loaded.inventory.size())
+			loaded = heroes.at(i);
+	}
 
+	DisplayHero(loaded);
+}
+
+// Print Strongest Hero
+void PrintStrongestHero(vector<Hero> &heroes)
+{
+	Hero strongest = heroes.at(0);
+	for (uint i = 0; i < heroes.size(); i++)
+	{
+		if (heroes.at(i).strength > strongest.strength)
+			strongest = heroes.at(i);
+	}
+
+	DisplayHero(strongest);
+}
+
+// Print Int > 18 Heroes
+void PrintIntelligentHero(vector<Hero> &heroes)
+{
+	vector<Hero> intelligentHeroes;
+	for (uint i = 0; i < heroes.size(); i++)
+	{
+		if (heroes.at(i).intelligence > 18)
+			intelligentHeroes.push_back(heroes.at(i));
+	}
+
+	for (uint i = 0; i < intelligentHeroes.size(); i++)
+	{
+		DisplayHero(intelligentHeroes.at(i));
+	}
+}
+
+// Print Clumsiest Heroes
+void PrintClumsiestHeroes(vector<Hero> &heroes)
+{
+	vector<Hero> tempVector = heroes;
+	vector<Hero> clumsyHeroes;
+	Hero clumsy = tempVector[0];
+	uint index = 0;
+
+	for (uint i = 0; i < tempVector.size(); i++)
+	{
+		if (tempVector[i].agility < clumsy.agility)
+		{
+			clumsy = heroes.at(i);
+			index = i;
+		}
+	}
+	clumsyHeroes.push_back(clumsy);
+	tempVector.erase(tempVector.begin() + index);
+
+	Hero clumsySecond = tempVector[0];
+	index = 0;
+
+	for (uint i = 0; i < tempVector.size(); i++)
+	{
+		if (tempVector[i].agility < clumsySecond.agility)
+		{
+			clumsySecond = tempVector.at(i);
+			index = i;
+		}
+	}
+	clumsyHeroes.push_back(clumsySecond);
+
+	cout << "Clumsiest hero:" << endl;
+	DisplayHero(clumsyHeroes[0]);
+	cout << "Second clumsiest hero: " << endl;
+	DisplayHero(clumsyHeroes[1]);
+}
+
+
+// Print Most Valuable
+void PrintMostValuable(vector<Hero> &heroes)
+{
+	uint totalValue;
+	uint mostValue = 0;
+	Hero wealthyHero = heroes[0];
+
+	for (uint i = 0; i < heroes.size(); i++)
+	{
+		totalValue = 0;
+		for (uint j = 0; j < heroes[i].inventory.size(); j++)
+		{
+			totalValue += heroes[i].inventory[j].cost; // Add up total value in inv
+		}
+
+		if (totalValue > mostValue)
+		{
+			wealthyHero = heroes.at(i);
+			mostValue = totalValue;
+		}
+	}
+
+	DisplayHero(wealthyHero);
+}
 
 int main()
 {
@@ -167,6 +283,13 @@ int main()
 	case 1:
 		LoadHeroFile(heroes, 1);
 		break;
+	case 2:
+		LoadHeroFile(heroes, 2);
+		break;
+	case 3:
+		LoadHeroFile(heroes, 1);
+		LoadHeroFile(heroes, 2);
+		break;
 	default:
 		break;
 	}
@@ -180,16 +303,30 @@ int main()
 
 	cin >> option;
 
-	/* Work your magic here */
+	/* Here Be Magic */
 	switch (option)
 	{
 	case 1:
 		PrintAllHeroes(heroes);
+		break;
+	case 2:
+		PrintMostItemHero(heroes);
+		break;
+	case 3:
+		PrintStrongestHero(heroes);
+		break;
+	case 4:
+		PrintIntelligentHero(heroes);
+		break;
+	case 5:
+		PrintClumsiestHeroes(heroes);
+		break;
+	case 6:
+		PrintMostValuable(heroes);
+		break;
 	default:
 		break;
 	}
-
-	_getch();
 
 	return 0;
 }
